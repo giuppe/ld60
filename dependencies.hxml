@@ -1,0 +1,13 @@
+-lib hxcpp:git:https://github.com/HaxeFoundation/hxcpp.git#v4.3.140
+-lib lime
+-lib flixel
+-lib flixel-addons
+-lib flixel-ui
+-lib openfl
+-lib safety
+-lib hxcpp-debug-server
+-lib crashdumper:git:https://github.com/sano98/crashdumper#sano-fixed
+-lib hscript
+-lib hashlink
+-lib nape-haxe4
+-lib ldtk-haxe-api

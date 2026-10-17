@@ -1,0 +1,83 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "HashLink Debugging",
+            "type": "hl",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/export/hl/bin",
+            "program": "${workspaceFolder}/export/hl/bin/hlboot.dat",
+            "hl": "${workspaceFolder}/export/hl/bin/OldTech.exe",
+            "preLaunchTask": {
+                "type": "lime",
+			    "command": "build",
+                "targetConfiguration": "HashLink / Debug",
+            }
+        },
+        {
+            "name": "HashLink Profiler",
+            "type": "hl",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/export/hl/bin",
+            "program": "${workspaceFolder}/export/hl/bin/hlboot.dat",
+            "hl": "${workspaceFolder}/export/hl/bin/OldTech.exe",
+            "profileSamples" : 10000,
+            "preLaunchTask": {
+                "type": "lime",
+			    "command": "build",
+                "targetConfiguration": "HashLink / Debug",
+            }
+        },
+        {
+            "name": "HXCPP Debugging",
+            "type": "hxcpp",
+            "request": "launch",
+            "program": "${workspaceFolder}/export/windows/bin/OldTech.exe",
+        },
+        {
+            "name": "HXCPP Build + Debug",
+            "type": "hxcpp",
+            "request": "launch",
+            "program": "${workspaceFolder}/export/windows/bin/OldTech.exe",
+            "preLaunchTask": {
+                "type": "lime",
+			    "command": "build",
+                "targetConfiguration": "Windows / Debug",
+            }
+        },
+        {
+            "name": "Mac HXCPP Debugging",
+            "type": "hxcpp",
+            "request": "launch",
+            "program": "${workspaceFolder}/export/macos/bin/OldTech.app/Contents/MacOS/OldTech",
+            "preLaunchTask": {
+                "type": "haxe",
+                "args": "active configuration"
+            }
+        },
+        {
+            "name": "Mac HXCPP Build + Debug",
+            "type": "hxcpp",
+            "request": "launch",
+            "program": "${workspaceFolder}/export/macos/bin/OldTech.app/Contents/MacOS/OldTech",
+            "preLaunchTask": {
+                "type": "lime",
+			    "command": "build",
+                "targetConfiguration": "Mac / Debug",
+            }
+        },
+        {
+            "name": "Build + Debug",
+            "type": "lime",
+            "request": "launch",
+            "preLaunchTask": {
+                "type": "lime",
+			    "command": "build",
+                "targetConfiguration": "HashLink / Debug",
+            }
+        }
+    ]
+}
