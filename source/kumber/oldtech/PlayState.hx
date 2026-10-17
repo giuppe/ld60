@@ -1,5 +1,6 @@
 package kumber.oldtech;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.FlxState;
@@ -10,6 +11,8 @@ import flixel.group.FlxSpriteGroup;
 class PlayState extends FlxState
 {
 	var level:World_Level;
+	var player:Player;
+	var platforms:FlxSpriteGroup;
 
 	override public function create():Void
 	{
@@ -26,17 +29,21 @@ class PlayState extends FlxState
 		group.x = level.worldX;
 		group.y = level.worldY;
 		add(group);
-
 		level.l_Tiles.render(group);
-		var player = new FlxSprite(world.all_levels.Level_0.l_Entities.all_Player[0].pixelX,
-			world.all_levels.Level_0.l_Entities.all_Player[0].pixelY,
-			"assets/player.png");
+		platforms = new FlxSpriteGroup();
+		platforms.x = level.worldX;
+		platforms.y = level.worldY;
+		add(platforms);
+		level.l_Platforms.render(platforms);
+		platforms.forEachExists((s)->{s.moves = false;s.immovable=true;});
+		
+		player = new Player(world.all_levels.Level_0.l_Entities.all_Player[0].pixelX,
+			world.all_levels.Level_0.l_Entities.all_Player[0].pixelY);
 		add(player);
-		var torch = new FlxSprite(world.all_levels.Level_0.l_Entities.all_Torch[0].pixelX,
+		
+		var torch = new Torch(world.all_levels.Level_0.l_Entities.all_Torch[0].pixelX,
 			world.all_levels.Level_0.l_Entities.all_Torch[0].pixelY);
-		torch.loadGraphic("assets/torch.png", true, 16,16);
-		torch.animation.add("flicker", [0,1],6.0);
-		torch.animation.play("flicker");
+		
 		add(torch);
 		
 
@@ -44,6 +51,8 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 	{
+		FlxG.collide(player, platforms);
+
 		super.update(elapsed);
 
 	}
