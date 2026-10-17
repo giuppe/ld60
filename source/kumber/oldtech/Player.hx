@@ -15,7 +15,9 @@ class Player extends IlluminableSprite
     public function new(x:Float, y:Float)
     {
         super(x,y);
-        loadGraphic("assets/player.png");
+        loadGraphic("assets/player.png", true, 16,16);
+        animation.add("walk", [0,1,2,3], 10);
+        animation.add("idle", [0]);
         moves = true;
         drag.x = DRAG;
         maxVelocity.set(MAX_SPEED_X, MAX_SPEED_Y);
@@ -31,13 +33,20 @@ class Player extends IlluminableSprite
         acceleration.x = 0;
         
         acceleration.y = GRAVITY;
+        
         if(FlxG.keys.anyPressed([LEFT,A]))
         {
-            acceleration.x = -1000;
+            acceleration.x = -2000;
+            animation.play("walk");
         }
         else if(FlxG.keys.anyPressed([RIGHT,D]))
         {
-            acceleration.x = 1000;
+            acceleration.x = 2000;
+            animation.play("walk");
+        }
+        else
+        {
+            animation.play("idle");
         }
 
         if(FlxG.keys.anyJustPressed([UP,W,X]))
