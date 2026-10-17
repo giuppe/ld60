@@ -39,14 +39,16 @@ class PlayState extends FlxState
 		
 		player = new Player(world.all_levels.Level_0.l_Entities.all_Player[0].pixelX,
 			world.all_levels.Level_0.l_Entities.all_Player[0].pixelY);
+		
+		for(i in 0...world.all_levels.Level_0.l_Entities.all_Torch.length)
+		{
+			var torch = new Torch(world.all_levels.Level_0.l_Entities.all_Torch[i].pixelX,
+				world.all_levels.Level_0.l_Entities.all_Torch[i].pixelY);
+			
+			add(torch);
+			R.currentLights.push(torch);
+		}
 		add(player);
-		
-		var torch = new Torch(world.all_levels.Level_0.l_Entities.all_Torch[0].pixelX,
-			world.all_levels.Level_0.l_Entities.all_Torch[0].pixelY);
-		
-		add(torch);
-		R.currentLights.push(torch);
-
 	}
 
 	override public function update(elapsed:Float):Void

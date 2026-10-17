@@ -23,8 +23,7 @@ class IlluminableSprite extends FlxSprite
         if(lightShader != null)
         {
             lightShader.setPos(x, y);
-            if(R.currentLights.length >0)
-                lightShader.setLightPos(R.currentLights[0].x, R.currentLights[0].y);
+            lightShader.updateLights(R.currentLights);
         }
         else if(frame != null)
         {

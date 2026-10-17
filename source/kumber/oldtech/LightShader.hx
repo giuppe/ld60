@@ -38,7 +38,14 @@ class LightShader extends FlxGraphicsShader
 	#line 2
 
     uniform float uTime;
-	uniform vec2 uLightPos;
+    uniform vec2 uLightsPos0;
+	uniform vec2 uLightsPos1;
+	uniform vec2 uLightsPos2;
+	uniform vec2 uLightsPos3;
+    uniform float uLightsIntensity0;
+	uniform float uLightsIntensity1;
+	uniform float uLightsIntensity2;
+	uniform float uLightsIntensity3;
 	uniform vec2 uPos;
 	uniform vec2 flip;
 	varying vec2 screenPos;
@@ -48,20 +55,41 @@ class LightShader extends FlxGraphicsShader
 
 	void main()
 	{
+		vec2 uLightsPos[4] = {
+			uLightsPos0,
+			uLightsPos1,
+			uLightsPos2,
+			uLightsPos3
+		};
+		float uLightsIntensity[4] = {
+			uLightsIntensity0,
+			uLightsIntensity1,
+			uLightsIntensity2,
+			uLightsIntensity3
+		};
+
+		float total_light = 0.0;
+		float total_rim = 0.0;
+		float total_rim_int = 0.0;
+
+		float ambient_per_light = 0.03;
+
+		float ambient = 0.0;
+
+		for (int i = 0; i < 4; i++) {
+			ambient += ambient_per_light * step(0.01, uLightsIntensity[i]);
+		}
+
+		total_light = clamp(total_light + ambient, 0.0, 1.0);
+		
+
 		vec2 texture_size = vec2(textureSize(bitmap, 0));
 		vec2 texel = 1.0 / texture_size;
 		vec2 pixpos = uPos+ (flixel_SpriteCoord-vec2(0.5))*flixel_SpriteSize;
-		float dist= distance(pixpos, uLightPos);
-		float light_intensity = 1.0 - smoothstep(0.0, 100.0, dist);
-        float rim_intensity = 1.0 - smoothstep(0.0, 60.0, dist);
-        float flicker = 0.85 + 0.10 * sin(uTime * 12.0) + 0.05 * sin(uTime *  19.0);
-
-        light_intensity *= flicker;
+		
 
 		vec3 light_color = normalize(vec3(1.0, 1.0, 1.0));
-
-		//vec2 texel = 1.0 / vec2(textureSize(sprite_texture, 0));
-
+		// compute the edge normal
 		float alphaL = texture(bitmap, openfl_TextureCoordv - vec2(texel.x, 0.0)).a;
 		float alphaR = texture(bitmap, openfl_TextureCoordv + vec2(texel.x, 0.0)).a;
 		float alphaU = texture(bitmap, openfl_TextureCoordv - vec2(0.0, texel.y)).a;
@@ -75,16 +103,41 @@ class LightShader extends FlxGraphicsShader
 		vec2 edge = vec2(alphaR - alphaL, alphaD - alphaU);
 
 		vec2 normal = normalize(edge);
-		vec2 to_light = normalize(pixpos - uLightPos);
+		
+		
 
-		float rim = max(dot(normal, to_light), 0.0);
-		rim *= rim_intensity;
+		for (int i = 0; i < 4; i++) {
+			float dist = distance(pixpos, uLightsPos[i]);
+			float light_intensity = 1.0 - smoothstep(0.0, 100.0, dist);
+			light_intensity = clamp(light_intensity*uLightsIntensity[i],0.0,1.0);
+			
+			float flicker = 0.85 + 0.10 * sin(uTime * 12.0) + 0.05 * sin(uTime *  19.0);
+
+			light_intensity *= flicker;
+
+			float rim_intensity = 1.0 - smoothstep(0.0, 60.0, distance(pixpos, uLightsPos[i]));
+			rim_intensity = clamp(rim_intensity*uLightsIntensity[i], 0.0,1.0 );
+
+			vec2 to_light = normalize(pixpos - uLightsPos[i]);
+
+			float rim = max(dot(normal, to_light), 0.0);
+			rim *= rim_intensity;
+
+			total_light += light_intensity;
+			total_rim += rim;
+			total_rim_int += rim_intensity;
+		}
+		total_light = clamp(total_light, 0.0, 1.0);
+		total_rim = clamp(total_rim, 0.0,1.0);
+		total_rim_int = clamp(total_rim_int, 0.0,1.0);
+
+		
 
 		vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
-		color *= vec4(light_intensity*light_color+0.5, 1.0);
-		vec4 final_light=vec4(rim_intensity*light_color+0.5, 1.0);
-		color *= mix(final_light, final_light*2.5, rim);
-		//color = vec4(rim, 0.0, 0.0,1.0);
+		color *= vec4(total_light*light_color, 1.0);
+		vec4 final_light=vec4(total_rim_int*light_color+1.0, 1.0);
+		color *= mix(final_light, final_light*2.5, total_rim);
+		//color = vec4(total_rim_int, 0.0, 0.0,1.0);
 		gl_FragColor = color;
 	}
 ")
@@ -112,9 +165,34 @@ class LightShader extends FlxGraphicsShader
         data.uTime.value = [time];
 	}
 
-	public function setLightPos(x:Float, y:Float):Void
+	public function updateLights(lights:Array<Torch>):Void
 	{
-		data.uLightPos.value = [x, y];
+
+		
+		var currLights:Array<LightDescriptor> = [];
+        
+        
+        for(i in 0...4)
+        {
+            if(i<lights.length)
+            {
+                currLights.push({x: lights[i].x, y: lights[i].y, value: 1.0 });
+            }
+            else
+            {
+                currLights.push({x:0.0,y:0.0, value:0.0});
+            }
+        }
+		//trace(currLights);
+
+        data.uLightsPos0.value = [currLights[0].x, currLights[0].y];
+		data.uLightsPos1.value = [	currLights[1].x, currLights[1].y];
+		data.uLightsPos2.value = [	currLights[2].x, currLights[2].y]; 
+		data.uLightsPos3.value = [	currLights[3].x, currLights[3].y];
+        data.uLightsIntensity0.value = [currLights[0].value];
+		data.uLightsIntensity1.value = [currLights[1].value];
+		data.uLightsIntensity2.value = [	currLights[2].value]; 
+		data.uLightsIntensity3.value = [	currLights[3].value];
 	}
 
 	public function setPos(x:Float, y:Float):Void
@@ -123,3 +201,5 @@ class LightShader extends FlxGraphicsShader
 	}
 
 }
+
+typedef LightDescriptor = {x:Float, y: Float, value:Float};
