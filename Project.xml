@@ -38,6 +38,7 @@
 
 	<haxelib name="flixel" />
 	<haxelib name="ldtk-haxe-api" />
+	<haxelib name="deepnightlibs" />
 
 	<haxelib name="safety" />
 	
