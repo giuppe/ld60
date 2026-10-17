@@ -29,12 +29,12 @@ class PlayState extends FlxState
 		group.x = level.worldX;
 		group.y = level.worldY;
 		add(group);
-		level.l_Tiles.render(group);
+		level.l_Tiles.render2(group, IlluminableSprite);
 		platforms = new FlxSpriteGroup();
 		platforms.x = level.worldX;
 		platforms.y = level.worldY;
 		add(platforms);
-		level.l_Platforms.render(platforms);
+		level.l_Platforms.render2(platforms, IlluminableSprite);
 		platforms.forEachExists((s)->{s.moves = false;s.immovable=true;});
 		
 		player = new Player(world.all_levels.Level_0.l_Entities.all_Player[0].pixelX,
@@ -45,7 +45,7 @@ class PlayState extends FlxState
 			world.all_levels.Level_0.l_Entities.all_Torch[0].pixelY);
 		
 		add(torch);
-		
+		R.currentLights.push(torch);
 
 	}
 

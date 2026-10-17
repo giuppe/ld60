@@ -4,14 +4,13 @@ import dn.phys.Velocity;
 import flixel.FlxG;
 import flixel.FlxSprite;
 
-class Player extends FlxSprite
+class Player extends IlluminableSprite
 {
     final DRAG = 1000;
     final GRAVITY = 980;
     final MAX_SPEED_X = 50;
     final MAX_SPEED_Y = 200;
 
-    
 
     public function new(x:Float, y:Float)
     {
@@ -23,6 +22,7 @@ class Player extends FlxSprite
 
         setSize(4, 14);
         offset.set(6,2);
+        
         //updateHitbox();
     }
 
@@ -45,8 +45,12 @@ class Player extends FlxSprite
             acceleration.y = -10000;
         }
         
-        this.flipX = velocity.x<0;
-
+        if(velocity.x<0)
+            this.flipX = true;
+        if(velocity.x>0)
+            this.flipX = false;
+        
+        
         super.update(elapsed);
     }
 }
