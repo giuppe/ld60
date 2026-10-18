@@ -34,8 +34,10 @@ class LightShader extends FlxGraphicsShader
     ")
 
     @:glFragmentSource("
-    #pragma header
+    
+	#pragma header
 	#line 2
+	
 
     uniform float uTime;
     uniform vec2 uLightsPos0;
@@ -55,18 +57,18 @@ class LightShader extends FlxGraphicsShader
 
 	void main()
 	{
-		vec2 uLightsPos[4] = {
-			uLightsPos0,
-			uLightsPos1,
-			uLightsPos2,
-			uLightsPos3
-		};
-		float uLightsIntensity[4] = {
-			uLightsIntensity0,
-			uLightsIntensity1,
-			uLightsIntensity2,
-			uLightsIntensity3
-		};
+		vec2 uLightsPos[4];
+		uLightsPos[0] =	uLightsPos0;
+		uLightsPos[1] =	uLightsPos1;
+		uLightsPos[2] =	uLightsPos2;
+		uLightsPos[3] =	uLightsPos3;
+		
+		float uLightsIntensity[4];
+		uLightsIntensity[0] = uLightsIntensity0;
+		uLightsIntensity[1] =	uLightsIntensity1;
+		uLightsIntensity[2] =	uLightsIntensity2;
+		uLightsIntensity[3] =	uLightsIntensity3;
+		
 
 		float total_light = 0.0;
 		float total_rim = 0.0;
@@ -83,17 +85,17 @@ class LightShader extends FlxGraphicsShader
 		total_light = clamp(total_light + ambient, 0.0, 1.0);
 		
 
-		vec2 texture_size = vec2(textureSize(bitmap, 0));
+		vec2 texture_size = openfl_TextureSize;
 		vec2 texel = 1.0 / texture_size;
 		vec2 pixpos = uPos+ (flixel_SpriteCoord-vec2(0.5))*flixel_SpriteSize;
 		
 
 		vec3 light_color = normalize(vec3(1.0, 1.0, 1.0));
 		// compute the edge normal
-		float alphaL = texture(bitmap, openfl_TextureCoordv - vec2(texel.x, 0.0)).a;
-		float alphaR = texture(bitmap, openfl_TextureCoordv + vec2(texel.x, 0.0)).a;
-		float alphaU = texture(bitmap, openfl_TextureCoordv - vec2(0.0, texel.y)).a;
-		float alphaD = texture(bitmap, openfl_TextureCoordv + vec2(0.0, texel.y)).a;
+		float alphaL = flixel_texture2D(bitmap, openfl_TextureCoordv - vec2(texel.x, 0.0)).a;
+		float alphaR = flixel_texture2D(bitmap, openfl_TextureCoordv + vec2(texel.x, 0.0)).a;
+		float alphaU = flixel_texture2D(bitmap, openfl_TextureCoordv - vec2(0.0, texel.y)).a;
+		float alphaD = flixel_texture2D(bitmap, openfl_TextureCoordv + vec2(0.0, texel.y)).a;
 		if(flip.x > 0.5)
 		{
 			float temp = alphaL;
