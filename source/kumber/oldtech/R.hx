@@ -8,4 +8,6 @@ class R
     public static var currentLights:Array<Torch> = [];
 
     public static var foundGears:Array<String> = [];
+
+    public static var completedSockets:Array<String> = [];
 }

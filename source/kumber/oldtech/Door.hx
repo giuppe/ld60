@@ -14,7 +14,8 @@ class Door extends FlxSprite
     {
         super(x,y);
         isRight = x > 8;
-        makeGraphic(16, 16, FlxColor.MAGENTA);
+        var debugColor= #if debug FlxColor.MAGENTA #else FlxColor.TRANSPARENT #end;
+        makeGraphic(16, 16, debugColor);
     }
 
 

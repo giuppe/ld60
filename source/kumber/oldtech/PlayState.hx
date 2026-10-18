@@ -18,6 +18,8 @@ class PlayState extends FlxState
 	var platforms:FlxSpriteGroup;
 	var doors:FlxSpriteGroup;
 	var gears:FlxSpriteGroup;
+	var sockets:FlxSpriteGroup;
+	var levelTransition:Bool = false;
 
 	override public function create():Void
 	{
@@ -37,7 +39,7 @@ class PlayState extends FlxState
 	public function loadLevel(level:World_Level, playerPos:FlxPoint)
 	{
 		trace(level.pxWid);
-		
+		levelTransition = true;
 		var group = new FlxSpriteGroup();
 		//group.x = level.worldX;
 		//group.y = level.worldY;
@@ -59,6 +61,7 @@ class PlayState extends FlxState
 				level.l_Entities.all_Torch[i].pixelY);
 			
 			add(torch);
+			
 			R.currentLights.push(torch);
 		}
 
@@ -82,13 +85,26 @@ class PlayState extends FlxState
 				var gear = new Gear(level.l_Entities.all_Gear[i].pixelX,
 					level.l_Entities.all_Gear[i].pixelY);
 				gear.levelId = level.iid;
-				//door.levelRef = level.l_Entities.all_Door[i].f_targetLevelPoint.levelIid;
-				//door.entityRef = level.l_Entities.all_Door[i].f_targetLevelPoint.entityIid;
+
 				gears.add(gear);
 				
 			}
 		}
 		add(gears);
+
+		sockets = new FlxSpriteGroup();
+		
+		for(i in 0...level.l_Entities.all_Socket.length)
+		{
+			var filled = R.completedSockets.contains(level.l_Entities.all_Socket[i].iid);
+			var socket = new Socket(level.l_Entities.all_Socket[i].pixelX,
+				level.l_Entities.all_Socket[i].pixelY, filled);
+			socket.iid = level.l_Entities.all_Socket[i].iid;
+			sockets.add(socket);
+			
+		}
+		
+		add(sockets);
 
 		add(player);
 		if(player.appendedGear != null)
@@ -106,9 +122,20 @@ class PlayState extends FlxState
         return true;
     }
 
+	public function removeGearFromPlayer(socket:Socket):Void
+	{
+		if(player.appendedGear == null)
+			return;
+		this.remove(player.appendedGear);
+		player.appendedGear.kill();
+		player.appendedGear = null;
+		socket.setFilled();
+	}
+
 	override public function update(elapsed:Float):Void
 	{
-		trace(player.x, player.y);
+		levelTransition = false;
+		//trace(player.x, player.y);
 		FlxG.collide(player, platforms, (p:FlxSprite, platform:FlxSprite)->
 		{
 			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
@@ -124,17 +151,25 @@ class PlayState extends FlxState
 
 		FlxG.overlap(player, doors, (p:FlxSprite, d:FlxSprite)->
 		{
+			if(levelTransition)
+				return;
 			//trace("player overlaps");
 			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
 			var door:Null<Door> = Std.downcast(d, kumber.oldtech.Door);
 			if(player == null || door == null)
+				return;
+			if(door.isRight && !player.pixelsOverlapPoint(FlxPoint.get(door.x+door.width, door.y+door.height/2)))
+				return;
+
+			if(!door.isRight && !player.pixelsOverlapPoint(FlxPoint.get(door.x, door.y+door.height/2)))
 				return;
 
 			if((door.isRight && player.velocity.x > 0) ||
 				(!door.isRight &&  player.velocity.x < 0))
 			{
 				this.remove(player);
-				this.remove(player.appendedGear);
+				if(player.appendedGear != null)
+					this.remove(player.appendedGear);
 				this.clear();
 				platforms.clear();
 				doors.clear();
@@ -156,7 +191,11 @@ class PlayState extends FlxState
 				{
 					if(targetDoor.iid == door.entityRef)
 					{
-						targetPos.set(targetDoor.pixelX, targetDoor.pixelY);
+						var isRight = targetDoor.pixelX > 8;
+						if(isRight)
+							targetPos.set(targetDoor.pixelX+16-player.width, targetDoor.pixelY);
+						else
+							targetPos.set(targetDoor.pixelX, targetDoor.pixelY);
 					}
 				}
 				
@@ -181,6 +220,20 @@ class PlayState extends FlxState
 			
 
 		});
+
+		FlxG.overlap(player, sockets, (p:FlxSprite, d:FlxSprite)->
+		{
+			//trace("player overlaps");
+			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
+			var socket:Null<Socket> = Std.downcast(d, kumber.oldtech.Socket);
+			if(player == null || socket == null)
+				return;
+			if(player.appendedGear != null && !socket.filled )
+			{
+				this.removeGearFromPlayer(socket);
+			}
+		});
+		
 
 		super.update(elapsed);
 
