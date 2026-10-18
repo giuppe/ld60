@@ -12,7 +12,8 @@ class Player extends IlluminableSprite
     final MAX_SPEED_X:Float = 50;
     final MAX_SPEED_Y:Float = 200;
     final FAST_FALL = 1.5;
-    final MAX_JUMP_TIME = 0.100;
+    final MAX_JUMP_TIME = 0.160;
+    final JUMP_TIME_PENALTY = -0.06;
     final JUMP_MAX_REMEMBER_TIME = 0.1;           
     
     public var appendedGear:Null<IlluminableSprite> = null;
@@ -87,7 +88,11 @@ class Player extends IlluminableSprite
             }
         }
 
-        if(FlxG.keys.anyPressed([UP,W,X]) && isJumping && timeJumping < MAX_JUMP_TIME)
+        var current_max_jump_time = MAX_JUMP_TIME;
+        if(appendedGear!=null)
+            current_max_jump_time += JUMP_TIME_PENALTY;
+
+        if(FlxG.keys.anyPressed([UP,W,X]) && isJumping && timeJumping < current_max_jump_time)
         {
             velocity.y += -1200*elapsed;
             timeJumping += elapsed;
