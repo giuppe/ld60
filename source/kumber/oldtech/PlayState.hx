@@ -75,19 +75,36 @@ class PlayState extends FlxState
 		add(doors);
 
 		gears = new FlxSpriteGroup();
-		for(i in 0...level.l_Entities.all_Gear.length)
+		if(!R.foundGears.contains(level.iid))
 		{
-			var door = new Gear(level.l_Entities.all_Gear[i].pixelX,
-				level.l_Entities.all_Gear[i].pixelY);
-			//door.levelRef = level.l_Entities.all_Door[i].f_targetLevelPoint.levelIid;
-			//door.entityRef = level.l_Entities.all_Door[i].f_targetLevelPoint.entityIid;
-			gears.add(door);
-			
+			for(i in 0...level.l_Entities.all_Gear.length)
+			{
+				var gear = new Gear(level.l_Entities.all_Gear[i].pixelX,
+					level.l_Entities.all_Gear[i].pixelY);
+				gear.levelId = level.iid;
+				//door.levelRef = level.l_Entities.all_Door[i].f_targetLevelPoint.levelIid;
+				//door.entityRef = level.l_Entities.all_Door[i].f_targetLevelPoint.entityIid;
+				gears.add(gear);
+				
+			}
 		}
 		add(gears);
 
 		add(player);
+		if(player.appendedGear != null)
+			add(player.appendedGear);
 	}
+
+	public function addGearToPlayer(gear:FlxSprite):Bool
+    {
+        if(player.appendedGear != null)
+            return false;
+        var newGear = new IlluminableSprite(gear.x,gear.y);
+        newGear.loadGraphicFromSprite(gear);
+        player.appendedGear = newGear;
+		this.add(player.appendedGear);
+        return true;
+    }
 
 	override public function update(elapsed:Float):Void
 	{
@@ -117,6 +134,7 @@ class PlayState extends FlxState
 				(!door.isRight &&  player.velocity.x < 0))
 			{
 				this.remove(player);
+				this.remove(player.appendedGear);
 				this.clear();
 				platforms.clear();
 				doors.clear();
@@ -146,6 +164,23 @@ class PlayState extends FlxState
 
 			}
 		} );
+
+		FlxG.overlap(player, gears, (p:FlxSprite, d:FlxSprite)->
+		{
+			//trace("player overlaps");
+			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
+			var gear:Null<Gear> = Std.downcast(d, kumber.oldtech.Gear);
+			if(player == null || gear == null)
+				return;
+			if(this.addGearToPlayer(gear))
+			{
+				R.foundGears.push(gear.levelId);
+				gear.kill();
+			}
+			
+			
+
+		});
 
 		super.update(elapsed);
 

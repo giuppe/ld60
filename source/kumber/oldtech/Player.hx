@@ -15,10 +15,13 @@ class Player extends IlluminableSprite
     final MAX_JUMP_TIME = 0.100;
     final JUMP_MAX_REMEMBER_TIME = 0.1;           
     
+    public var appendedGear:Null<IlluminableSprite> = null;
     var jumpRememberTime = 0.0;
 
     public var timeJumping:Float = 0;
     var isJumping = false;
+
+    var appendedTime:Float = 0;
 
 
     public function new(x:Float, y:Float)
@@ -37,6 +40,8 @@ class Player extends IlluminableSprite
         
         //updateHitbox();
     }
+
+    
 
     override public function update(elapsed:Float)
     {
@@ -113,6 +118,12 @@ class Player extends IlluminableSprite
 		{
 			animation.play("jump");
 		}
+
+        if(appendedGear!=null)
+        {
+            appendedTime += elapsed;
+            appendedGear.setPosition(flipX?x+width+10:x-appendedGear.width-10,(y-10)+3.0*Math.sin(appendedTime*2));
+        }
         
         
         super.update(elapsed);
