@@ -17,6 +17,7 @@ class PlayState extends FlxState
 	var player:Player;
 	var platforms:FlxSpriteGroup;
 	var doors:FlxSpriteGroup;
+	var gears:FlxSpriteGroup;
 
 	override public function create():Void
 	{
@@ -72,6 +73,19 @@ class PlayState extends FlxState
 			
 		}
 		add(doors);
+
+		gears = new FlxSpriteGroup();
+		for(i in 0...level.l_Entities.all_Gear.length)
+		{
+			var door = new Gear(level.l_Entities.all_Gear[i].pixelX,
+				level.l_Entities.all_Gear[i].pixelY);
+			//door.levelRef = level.l_Entities.all_Door[i].f_targetLevelPoint.levelIid;
+			//door.entityRef = level.l_Entities.all_Door[i].f_targetLevelPoint.entityIid;
+			gears.add(door);
+			
+		}
+		add(gears);
+
 		add(player);
 	}
 
