@@ -55,6 +55,7 @@ class Player extends IlluminableSprite
         }
         else if(FlxG.keys.anyPressed([RIGHT,D]))
         {
+            trace("pressing right");
             acceleration.x = 2000;
         }
         
