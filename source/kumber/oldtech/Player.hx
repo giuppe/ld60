@@ -1,9 +1,8 @@
 package kumber.oldtech;
 
 import flixel.tweens.FlxTween;
-import dn.phys.Velocity;
 import flixel.FlxG;
-import flixel.FlxSprite;
+
 
 class Player extends IlluminableSprite
 {
@@ -14,7 +13,11 @@ class Player extends IlluminableSprite
     final FAST_FALL = 1.5;
     final MAX_JUMP_TIME = 0.160;
     final JUMP_TIME_PENALTY = -0.06;
-    final JUMP_MAX_REMEMBER_TIME = 0.1;           
+    final JUMP_MAX_REMEMBER_TIME = 0.1;    
+    
+    public var hasAxe(default,null) = false;
+    public var hasPickaxe(default, default) = false;
+    public var hasBread(default, null) = false;
     
     public var appendedGear:Null<IlluminableSprite> = null;
     var jumpRememberTime = 0.0;

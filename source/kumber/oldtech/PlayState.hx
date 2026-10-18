@@ -1,5 +1,6 @@
 package kumber.oldtech;
 
+import flixel.FlxObject;
 import haxe.Exception;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
@@ -19,13 +20,14 @@ class PlayState extends FlxState
 	var doors:FlxSpriteGroup;
 	var gears:FlxSpriteGroup;
 	var sockets:FlxSpriteGroup;
+	var rocks:FlxSpriteGroup;
 	var torches:FlxSpriteGroup;
 	var levelTransition:Bool = false;
 
 	override public function create():Void
 	{
 		super.create();
-		trace("hello");
+		//trace("hello");
 		var text = new FlxText("Hello");
 		add(text);
 		text.setFormat(R.FONT_NAME, 30);
@@ -39,7 +41,7 @@ class PlayState extends FlxState
 
 	public function loadLevel(level:World_Level, playerPos:FlxPoint)
 	{
-		trace(level.pxWid);
+		//trace(level.pxWid);
 		levelTransition = true;
 		var group = new FlxSpriteGroup();
 		//group.x = level.worldX;
@@ -116,6 +118,24 @@ class PlayState extends FlxState
 		
 		add(sockets);
 
+		rocks = new FlxSpriteGroup();
+		
+		for(i in 0...level.l_Entities.all_Rock.length)
+		{
+			var broken = R.brokenRocks.contains(level.l_Entities.all_Rock[i].iid)||level.l_Entities.all_Rock[i].f_broken;
+			var rock = new Rock(level.l_Entities.all_Rock[i].pixelX,
+				level.l_Entities.all_Rock[i].pixelY, 
+				level.l_Entities.all_Rock[i].iid,
+				broken);
+			rock.immovable = true;
+			rock.moves = false;
+			rocks.add(rock);
+
+			
+		}
+		
+		add(rocks);
+
 		add(player);
 		if(player.appendedGear != null)
 			add(player.appendedGear);
@@ -173,6 +193,19 @@ class PlayState extends FlxState
                 FlxTween.tween(player, {"scale.x":1.0, "scale.y":1.0}, 0.05, {type:ONESHOT })
             );
 			}
+		});
+
+		FlxG.overlap(player, rocks, (p:FlxSprite, r:FlxSprite)->
+		{
+			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
+			var rock:Null<Rock> = Std.downcast(r, kumber.oldtech.Rock);
+			if(player == null || rock == null)
+				return;
+			if(player.hasPickaxe)
+				rock.breakRock();
+			else 
+				FlxObject.separate(player, rock);
+			
 		});
 
 		FlxG.overlap(player, doors, (p:FlxSprite, d:FlxSprite)->
@@ -245,7 +278,7 @@ class PlayState extends FlxState
 				R.foundGears.push(gear.levelId);
 				gear.kill();
 			}
-			
+			player.hasPickaxe = true;
 			
 
 		});
