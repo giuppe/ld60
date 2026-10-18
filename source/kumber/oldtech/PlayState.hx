@@ -1,5 +1,6 @@
 package kumber.oldtech;
 
+import flixel.tweens.FlxTween;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
@@ -53,7 +54,18 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 	{
-		FlxG.collide(player, platforms);
+		FlxG.collide(player, platforms, (p:FlxSprite, platform:FlxSprite)->
+		{
+			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
+			if(player != null && player.isTouching(FLOOR) && player.timeJumping>0)
+			{
+				player.timeJumping = 0;
+				player.velocity.y = 0;
+				FlxTween.tween(player, {"scale.x":1.1, "scale.y":0.9}, 0.05, {type:ONESHOT }).then(
+                FlxTween.tween(player, {"scale.x":1.0, "scale.y":1.0}, 0.05, {type:ONESHOT })
+            );
+			}
+		});
 
 		super.update(elapsed);
 
