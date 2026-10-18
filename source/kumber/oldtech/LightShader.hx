@@ -108,14 +108,14 @@ class LightShader extends FlxGraphicsShader
 
 		for (int i = 0; i < 4; i++) {
 			float dist = distance(pixpos, uLightsPos[i]);
-			float light_intensity = 1.0 - smoothstep(0.0, 100.0, dist);
+			float light_intensity = 1.0 - smoothstep(0.0, 60.0, dist);
 			light_intensity = clamp(light_intensity*uLightsIntensity[i],0.0,1.0);
 			
 			float flicker = 0.85 + 0.10 * sin(uTime * 12.0) + 0.05 * sin(uTime *  19.0);
 
 			light_intensity *= flicker;
 
-			float rim_intensity = 1.0 - smoothstep(0.0, 60.0, distance(pixpos, uLightsPos[i]));
+			float rim_intensity = 1.0 - smoothstep(0.0, 40.0, distance(pixpos, uLightsPos[i]));
 			rim_intensity = clamp(rim_intensity*uLightsIntensity[i], 0.0,1.0 );
 
 			vec2 to_light = normalize(pixpos - uLightsPos[i]);
@@ -150,9 +150,10 @@ class LightShader extends FlxGraphicsShader
 		super();
 		
 		sprite = parent;
+		time = Math.random()*0.1;
         data.frame_size.value = [sprite.frameWidth, sprite.frameHeight];
 		data.frame_pos.value = [sprite.frame.offset.x, sprite.frame.offset.y];
-		data.uTime.value = [0.0];
+		data.uTime.value = [time];
 	}
 
 	public function update(elapsed:Float)
