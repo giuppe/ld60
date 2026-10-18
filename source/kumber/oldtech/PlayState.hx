@@ -22,6 +22,8 @@ class PlayState extends FlxState
 	var sockets:FlxSpriteGroup;
 	var rocks:FlxSpriteGroup;
 	var torches:FlxSpriteGroup;
+	var pickaxe:Null<Pickaxe> = null;
+	var minitorch:Null<Minitorch> = null;
 	var levelTransition:Bool = false;
 
 	override public function create():Void
@@ -136,9 +138,26 @@ class PlayState extends FlxState
 		
 		add(rocks);
 
+		if(!player.hasPickaxe)
+		{
+			for(i in 0...level.l_Entities.all_Pickaxe.length)
+			{
+				add(pickaxe = new Pickaxe(level.l_Entities.all_Pickaxe[i].pixelX, level.l_Entities.all_Pickaxe[i].pixelY));
+			}
+		}
+
+		if(player.intensity==0)
+		{
+			for(i in 0...level.l_Entities.all_Minitorch.length)
+			{
+				add(minitorch = new Minitorch(level.l_Entities.all_Minitorch[i].pixelX, level.l_Entities.all_Minitorch[i].pixelY));
+			}
+		}
+
 		add(player);
 		if(player.appendedGear != null)
 			add(player.appendedGear);
+		R.currentLights.push(player);
 	}
 
 	public function updateLevelLed()
@@ -235,6 +254,7 @@ class PlayState extends FlxState
 				torches.clear();
 				gears.clear();
 				sockets.clear();
+				pickaxe = null;
 				var level = null;
 				for(l in world.levels)
 				{
@@ -278,8 +298,7 @@ class PlayState extends FlxState
 				R.foundGears.push(gear.levelId);
 				gear.kill();
 			}
-			player.hasPickaxe = true;
-			
+
 
 		});
 
@@ -294,6 +313,33 @@ class PlayState extends FlxState
 			{
 				this.removeGearFromPlayer(socket);
 			}
+		});
+
+		FlxG.overlap(player, pickaxe, (p:FlxSprite, d:FlxSprite)->
+		{
+			//trace("player overlaps");
+			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
+			var pickaxe:Null<Pickaxe> = Std.downcast(d, kumber.oldtech.Pickaxe);
+			if(player == null || pickaxe == null)
+				return;
+			player.hasPickaxe = true;
+			pickaxe.kill();
+			pickaxe = null;
+			
+		});
+
+		FlxG.overlap(player, minitorch, (p:FlxSprite, d:FlxSprite)->
+		{
+			//trace("player overlaps");
+			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
+			var minitorch:Null<Minitorch> = Std.downcast(d, kumber.oldtech.Minitorch);
+			if(player == null || minitorch == null)
+				return;
+			
+			minitorch.kill();
+			minitorch = null;
+			player.intensity +=0.5;
+			
 		});
 		
 

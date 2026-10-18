@@ -5,7 +5,7 @@ class R
 {
     public static final FONT_NAME:String = "assets/fonts/Not Jam Serif 15.ttf";
 
-    public static var currentLights:Array<Torch> = [];
+    public static var currentLights:Array<ITorch> = [];
 
     public static var foundGears:Array<String> = [];
 

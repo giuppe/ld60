@@ -1,10 +1,11 @@
 package kumber.oldtech;
 
+import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import flixel.FlxG;
 
 
-class Player extends IlluminableSprite
+class Player extends IlluminableSprite implements ITorch
 {
     final DRAG = 1000;
     final GRAVITY = 580;
@@ -27,6 +28,10 @@ class Player extends IlluminableSprite
 
     var appendedTime:Float = 0;
 
+	public var intensity:Float;
+	public var lightColor:FlxColor;
+	public var isLed(default, null):Bool;
+
 
     public function new(x:Float, y:Float)
     {
@@ -36,6 +41,11 @@ class Player extends IlluminableSprite
         animation.add("idle", [0]);
         animation.add("jump", [1]);
         moves = true;
+
+        intensity = 0.0;
+        lightColor = FlxColor.WHITE;
+        isLed = false;
+
         drag.x = DRAG;
         maxVelocity.set(MAX_SPEED_X, MAX_SPEED_Y);
 

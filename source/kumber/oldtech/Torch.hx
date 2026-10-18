@@ -4,7 +4,7 @@ import flixel.util.FlxColor;
 import flixel.FlxSprite;
 
 
-class Torch extends IlluminableSprite
+class Torch extends IlluminableSprite implements ITorch
 {
     public var lightColor:FlxColor = FlxColor.WHITE;
     public var intensity:Float = 1.0;

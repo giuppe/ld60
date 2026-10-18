@@ -196,7 +196,7 @@ class LightShader extends FlxGraphicsShader
         data.uTime.value = [time];
 	}
 
-	public function updateLights(lights:Array<Torch>):Void
+	public function updateLights(lights:Array<ITorch>):Void
 	{
 
 		
