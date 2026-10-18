@@ -19,6 +19,7 @@ class PlayState extends FlxState
 	var doors:FlxSpriteGroup;
 	var gears:FlxSpriteGroup;
 	var sockets:FlxSpriteGroup;
+	var torches:FlxSpriteGroup;
 	var levelTransition:Bool = false;
 
 	override public function create():Void
@@ -55,15 +56,24 @@ class PlayState extends FlxState
 		player.setPosition(playerPos.x, playerPos.y);
 		
 		R.currentLights.resize(0);
+		torches = new FlxSpriteGroup();
 		for(i in 0...level.l_Entities.all_Torch.length)
 		{
 			var torch = new Torch(level.l_Entities.all_Torch[i].pixelX,
 				level.l_Entities.all_Torch[i].pixelY);
-			
-			add(torch);
+			if(level.l_Entities.all_Torch[i].f_isLed)
+			{
+				if(R.completedSockets.length>=R.socketsToFill)
+					torch.setAsLedGreen();
+				else
+					torch.setAsLedRed();
+			}
+			torches.add(torch);
 			
 			R.currentLights.push(torch);
 		}
+		this.add(torches);
+		updateLevelLed();
 
 		doors = new FlxSpriteGroup();
 		for(i in 0...level.l_Entities.all_Door.length)
@@ -111,6 +121,21 @@ class PlayState extends FlxState
 			add(player.appendedGear);
 	}
 
+	public function updateLevelLed()
+	{
+		for(t in this.torches)
+		{
+			var torch = Std.downcast(t, kumber.oldtech.Torch);
+			if(torch != null && torch.isLed)
+			{
+				if(R.completedSockets.length>=R.socketsToFill)
+					torch.setAsLedGreen();
+				else
+					torch.setAsLedRed();
+			}
+		}
+	}
+
 	public function addGearToPlayer(gear:FlxSprite):Bool
     {
         if(player.appendedGear != null)
@@ -130,6 +155,7 @@ class PlayState extends FlxState
 		player.appendedGear.kill();
 		player.appendedGear = null;
 		socket.setFilled();
+		updateLevelLed();
 	}
 
 	override public function update(elapsed:Float):Void
@@ -173,6 +199,9 @@ class PlayState extends FlxState
 				this.clear();
 				platforms.clear();
 				doors.clear();
+				torches.clear();
+				gears.clear();
+				sockets.clear();
 				var level = null;
 				for(l in world.levels)
 				{

@@ -11,7 +11,7 @@
 	"iid": "e746b9e0-bde0-11f1-8bd3-1fb0f7bd3680",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 473703,
-	"nextUid": 13,
+	"nextUid": 14,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -215,7 +215,45 @@
 			"limitBehavior": "MoveLastOne",
 			"pivotX": 0,
 			"pivotY": 0,
-			"fieldDefs": []
+			"fieldDefs": [
+				{
+					"identifier": "isLed",
+					"doc": null,
+					"__type": "Bool",
+					"uid": 13,
+					"type": "F_Bool",
+					"isArray": false,
+					"canBeNull": false,
+					"arrayMinLength": null,
+					"arrayMaxLength": null,
+					"editorDisplayMode": "Hidden",
+					"editorDisplayScale": 1,
+					"editorDisplayPos": "Above",
+					"editorLinkStyle": "StraightArrow",
+					"editorDisplayColor": null,
+					"editorAlwaysShow": false,
+					"editorShowInWorld": true,
+					"editorCutLongValues": true,
+					"editorTextSuffix": null,
+					"editorTextPrefix": null,
+					"useForSmartColor": false,
+					"exportToToc": false,
+					"searchable": false,
+					"min": null,
+					"max": null,
+					"regex": null,
+					"acceptFileTypes": null,
+					"defaultOverride": null,
+					"textLanguageMode": null,
+					"symmetricalRef": false,
+					"autoChainRef": true,
+					"allowOutOfLevelRef": true,
+					"allowedRefs": "OnlySame",
+					"allowedRefsEntityUid": null,
+					"allowedRefTags": [],
+					"tilesetUid": null
+				}
+			]
 		},
 		{
 			"identifier": "Door",
@@ -482,7 +520,10 @@
 							"height": 16,
 							"defUid": 4,
 							"px": [48,32],
-							"fieldInstances": [],
+							"fieldInstances": [{ "__identifier": "isLed", "__type": "Bool", "__value": true, "__tile": null, "defUid": 13, "realEditorValues": [{
+								"id": "V_Bool",
+								"params": [ true ]
+							}] }],
 							"__worldX": 48,
 							"__worldY": 32
 						},
@@ -498,7 +539,7 @@
 							"height": 16,
 							"defUid": 4,
 							"px": [128,32],
-							"fieldInstances": [],
+							"fieldInstances": [{ "__identifier": "isLed", "__type": "Bool", "__value": false, "__tile": null, "defUid": 13, "realEditorValues": [] }],
 							"__worldX": 128,
 							"__worldY": 32
 						},
@@ -716,7 +757,7 @@
 							"height": 16,
 							"defUid": 4,
 							"px": [48,16],
-							"fieldInstances": [],
+							"fieldInstances": [{ "__identifier": "isLed", "__type": "Bool", "__value": false, "__tile": null, "defUid": 13, "realEditorValues": [] }],
 							"__worldX": -144,
 							"__worldY": 16
 						},
@@ -756,7 +797,7 @@
 							"height": 16,
 							"defUid": 4,
 							"px": [128,0],
-							"fieldInstances": [],
+							"fieldInstances": [{ "__identifier": "isLed", "__type": "Bool", "__value": false, "__tile": null, "defUid": 13, "realEditorValues": [] }],
 							"__worldX": -64,
 							"__worldY": 0
 						}

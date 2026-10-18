@@ -10,4 +10,6 @@ class R
     public static var foundGears:Array<String> = [];
 
     public static var completedSockets:Array<String> = [];
+
+    public static final socketsToFill:Int = 1;
 }

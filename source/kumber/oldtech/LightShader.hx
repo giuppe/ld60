@@ -1,5 +1,6 @@
 package kumber.oldtech;
 
+import flixel.util.FlxColor;
 import flixel.FlxSprite;
 import flixel.graphics.tile.FlxGraphicsShader;
 
@@ -40,10 +41,19 @@ class LightShader extends FlxGraphicsShader
 	
 
     uniform float uTime;
+	
     uniform vec2 uLightsPos0;
 	uniform vec2 uLightsPos1;
 	uniform vec2 uLightsPos2;
 	uniform vec2 uLightsPos3;
+	uniform vec3 uLightsColor0;
+	uniform vec3 uLightsColor1;
+	uniform vec3 uLightsColor2;
+	uniform vec3 uLightsColor3;
+	uniform float uLightsFlicker0;
+	uniform float uLightsFlicker1;
+	uniform float uLightsFlicker2;
+	uniform float uLightsFlicker3;
     uniform float uLightsIntensity0;
 	uniform float uLightsIntensity1;
 	uniform float uLightsIntensity2;
@@ -62,12 +72,24 @@ class LightShader extends FlxGraphicsShader
 		uLightsPos[1] =	uLightsPos1;
 		uLightsPos[2] =	uLightsPos2;
 		uLightsPos[3] =	uLightsPos3;
+
+		vec3 uLightsColor[4];
+		uLightsColor[0] = uLightsColor0;
+		uLightsColor[1] = uLightsColor1;
+		uLightsColor[2] = uLightsColor2;
+		uLightsColor[3] = uLightsColor3;
+
+		float uLightsFlicker[4];
+		uLightsFlicker[0] = uLightsFlicker0;
+		uLightsFlicker[1] = uLightsFlicker1;
+		uLightsFlicker[2] = uLightsFlicker2;
+		uLightsFlicker[3] = uLightsFlicker3;
 		
 		float uLightsIntensity[4];
 		uLightsIntensity[0] = uLightsIntensity0;
-		uLightsIntensity[1] =	uLightsIntensity1;
-		uLightsIntensity[2] =	uLightsIntensity2;
-		uLightsIntensity[3] =	uLightsIntensity3;
+		uLightsIntensity[1] = uLightsIntensity1;
+		uLightsIntensity[2] = uLightsIntensity2;
+		uLightsIntensity[3] = uLightsIntensity3;
 		
 
 		float total_light = 0.0;
@@ -106,7 +128,8 @@ class LightShader extends FlxGraphicsShader
 
 		vec2 normal = normalize(edge);
 		
-		
+		vec3 color_sum = vec3(0.0);
+		float weight_sum = 0.0;
 
 		for (int i = 0; i < 4; i++) {
 			float dist = distance(pixpos, uLightsPos[i]);
@@ -114,7 +137,8 @@ class LightShader extends FlxGraphicsShader
 			light_intensity = clamp(light_intensity*uLightsIntensity[i],0.0,1.0);
 			
 			float flicker = 0.85 + 0.10 * sin(uTime * 12.0) + 0.05 * sin(uTime *  19.0);
-
+			if(uLightsFlicker[i] < 0.5)
+				flicker = 1.0;
 			light_intensity *= flicker;
 
 			float rim_intensity = 1.0 - smoothstep(0.0, 40.0, distance(pixpos, uLightsPos[i]));
@@ -128,16 +152,19 @@ class LightShader extends FlxGraphicsShader
 			total_light += light_intensity;
 			total_rim += rim;
 			total_rim_int += rim_intensity;
+
+			color_sum += uLightsColor[i] * light_intensity;
+			weight_sum += light_intensity;
 		}
 		total_light = clamp(total_light, 0.0, 1.0);
 		total_rim = clamp(total_rim, 0.0,1.0);
 		total_rim_int = clamp(total_rim_int, 0.0,1.0);
-
 		
+		vec3 mixed_light_color = weight_sum > 0.001 ? color_sum/weight_sum : vec3(1.0);
 
 		vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
-		color *= vec4(total_light*light_color, 1.0);
-		vec4 final_light=vec4(total_rim_int*light_color+1.0, 1.0);
+		color *= vec4(total_light*mixed_light_color, 1.0);
+		vec4 final_light=vec4(total_rim_int*mixed_light_color+1.0, 1.0);
 		color *= mix(final_light, final_light*2.5, total_rim);
 		//color = vec4(total_rim_int, 0.0, 0.0,1.0);
 		gl_FragColor = color;
@@ -156,6 +183,7 @@ class LightShader extends FlxGraphicsShader
         data.frame_size.value = [sprite.frameWidth, sprite.frameHeight];
 		data.frame_pos.value = [sprite.frame.offset.x, sprite.frame.offset.y];
 		data.uTime.value = [time];
+
 	}
 
 	public function update(elapsed:Float)
@@ -179,11 +207,11 @@ class LightShader extends FlxGraphicsShader
         {
             if(i<lights.length)
             {
-                currLights.push({x: lights[i].x, y: lights[i].y, value: 1.0 });
+                currLights.push({x: lights[i].x, y: lights[i].y, value: lights[i].intensity, color:lights[i].lightColor, flicker: lights[i].isLed?0.0:1.0 });
             }
             else
             {
-                currLights.push({x:0.0,y:0.0, value:0.0});
+                currLights.push({x:0.0,y:0.0, value:0.0, color:FlxColor.WHITE, flicker: 0.0});
             }
         }
 		//trace(currLights);
@@ -192,10 +220,18 @@ class LightShader extends FlxGraphicsShader
 		data.uLightsPos1.value = [	currLights[1].x, currLights[1].y];
 		data.uLightsPos2.value = [	currLights[2].x, currLights[2].y]; 
 		data.uLightsPos3.value = [	currLights[3].x, currLights[3].y];
+		data.uLightsColor0.value = [currLights[0].color.redFloat, currLights[0].color.greenFloat, currLights[0].color.blueFloat ];
+		data.uLightsColor1.value = [currLights[1].color.redFloat, currLights[1].color.greenFloat, currLights[1].color.blueFloat ];
+		data.uLightsColor2.value = [currLights[2].color.redFloat, currLights[2].color.greenFloat, currLights[2].color.blueFloat ];
+		data.uLightsColor3.value = [currLights[3].color.redFloat, currLights[3].color.greenFloat, currLights[3].color.blueFloat ];
         data.uLightsIntensity0.value = [currLights[0].value];
 		data.uLightsIntensity1.value = [currLights[1].value];
 		data.uLightsIntensity2.value = [	currLights[2].value]; 
 		data.uLightsIntensity3.value = [	currLights[3].value];
+		data.uLightsFlicker0.value = [currLights[0].flicker];
+		data.uLightsFlicker1.value = [currLights[1].flicker];
+		data.uLightsFlicker2.value = [currLights[2].flicker];
+		data.uLightsFlicker3.value = [currLights[3].flicker];
 	}
 
 	public function setPos(x:Float, y:Float):Void
@@ -205,4 +241,4 @@ class LightShader extends FlxGraphicsShader
 
 }
 
-typedef LightDescriptor = {x:Float, y: Float, value:Float};
+typedef LightDescriptor = {x:Float, y: Float, value:Float, color:FlxColor, flicker:Float};
