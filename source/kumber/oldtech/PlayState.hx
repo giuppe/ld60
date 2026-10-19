@@ -1,5 +1,6 @@
 package kumber.oldtech;
 
+import flixel.group.FlxGroup;
 import flixel.util.FlxDirection;
 import flixel.FlxObject;
 import haxe.Exception;
@@ -24,8 +25,8 @@ class PlayState extends FlxState
 	var rocks:FlxSpriteGroup;
 	var torches:FlxSpriteGroup;
 	var oneways:FlxSpriteGroup;
-	var pickaxe:Null<Pickaxe> = null;
-	var minitorch:Null<Minitorch> = null;
+	var pickaxe:FlxGroup;
+	var minitorch:FlxGroup;
 	var exit:Null<Exit> = null;
 	var exitGate:Null<ExitGate> = null;
 	var levelTransition:Bool = false;
@@ -160,22 +161,29 @@ class PlayState extends FlxState
 		add(rocks);
 
 		
-
+		pickaxe = new FlxGroup();
 		if(!player.hasPickaxe)
 		{
 			for(i in 0...level.l_Entities.all_Pickaxe.length)
 			{
-				add(pickaxe = new Pickaxe(level.l_Entities.all_Pickaxe[i].pixelX, level.l_Entities.all_Pickaxe[i].pixelY));
+				var p = new Pickaxe(level.l_Entities.all_Pickaxe[i].pixelX, level.l_Entities.all_Pickaxe[i].pixelY);
+				pickaxe.add(p.createParticles());
+				pickaxe.add(p);
 			}
 		}
+		add(pickaxe);
 
+		minitorch = new FlxGroup();
 		if(player.intensity==0)
 		{
 			for(i in 0...level.l_Entities.all_Minitorch.length)
 			{
-				add(minitorch = new Minitorch(level.l_Entities.all_Minitorch[i].pixelX, level.l_Entities.all_Minitorch[i].pixelY));
+				var m = new Minitorch(level.l_Entities.all_Minitorch[i].pixelX, level.l_Entities.all_Minitorch[i].pixelY);
+				minitorch.add(m.createParticles());
+				minitorch.add(m);
 			}
 		}
+		add(minitorch);
 
 		for(i in 0...level.l_Entities.all_Exit.length)
 		{
@@ -324,8 +332,8 @@ class PlayState extends FlxState
 				oneways.clear();
 				exitGate = null;
 				exit = null;
-				minitorch = null;
-				pickaxe = null;
+				minitorch.clear();
+				pickaxe.clear();
 				var level = null;
 				for(l in world.levels)
 				{
