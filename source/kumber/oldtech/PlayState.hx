@@ -217,7 +217,7 @@ class PlayState extends FlxState
 			add(player.appendedGear);
 		R.currentLights.push(player);
 		#if debug
-		R.socketsToFill = 1;
+		R.socketsToFill = 0;
 		#end
 	}
 
@@ -262,7 +262,7 @@ class PlayState extends FlxState
 	{
 		levelTransition = false;
 		//trace(player.x, player.y);
-		FlxG.collide(player, exitGate);
+		
 		FlxG.collide(player, platforms, (p:FlxSprite, platform:FlxSprite)->
 		{
 			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
@@ -296,9 +296,23 @@ class PlayState extends FlxState
 			if(player == null || rock == null)
 				return;
 			if(player.hasPickaxe)
+			{
 				rock.breakRock();
+				FlxG.sound.play("assets/sounds/break.wav", 1, false);
+			}
 			else 
 				FlxObject.separate(player, rock);
+			
+		});
+
+		FlxG.overlap(player, exitGate, (p:FlxSprite, r:FlxSprite)->
+		{
+			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
+			var exitgate:Null<ExitGate> = Std.downcast(r, kumber.oldtech.ExitGate);
+			if(player == null || exitgate == null)
+				return;
+			if(!exitgate.isOpen)
+				FlxObject.separate(player, exitgate);
 			
 		});
 
@@ -330,6 +344,8 @@ class PlayState extends FlxState
 				gears.clear();
 				sockets.clear();
 				oneways.clear();
+				if(exitGate != null)
+					exitGate.kill();
 				exitGate = null;
 				exit = null;
 				minitorch.clear();
@@ -394,6 +410,7 @@ class PlayState extends FlxState
 			{
 				R.foundGears.push(gear.levelId);
 				gear.kill();
+				FlxG.sound.play("assets/sounds/pickupgear.wav", 1, false);
 			}
 
 
@@ -409,6 +426,7 @@ class PlayState extends FlxState
 			if(player.appendedGear != null && !socket.filled )
 			{
 				this.removeGearFromPlayer(socket);
+				FlxG.sound.play("assets/sounds/placegear.wav", 1, false);
 			}
 		});
 
@@ -422,6 +440,7 @@ class PlayState extends FlxState
 			player.hasPickaxe = true;
 			pickaxe.kill();
 			pickaxe = null;
+			FlxG.sound.play("assets/sounds/powerup.wav", 1, false);
 			
 		});
 
@@ -436,7 +455,7 @@ class PlayState extends FlxState
 			minitorch.kill();
 			minitorch = null;
 			player.intensity +=0.1;
-			
+			FlxG.sound.play("assets/sounds/powerup.wav", 1, false);
 		});
 		
 

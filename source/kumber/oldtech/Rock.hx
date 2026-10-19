@@ -1,5 +1,6 @@
 package kumber.oldtech;
 
+import flixel.FlxG;
 import flixel.util.FlxColor;
 
 class Rock extends IlluminableSprite

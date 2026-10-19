@@ -76,6 +76,7 @@ class EndState extends FlxState
                 flow2.visible = true;
             }})).then(FlxTween.num(0.0,1.0, 0.1,{onComplete: (_)->{
                 flowSplash.visible = true;
+                FlxG.sound.play("assets/sounds/whoosh2.wav", 1, false);
                 player.animation.play("walk");
                 FlxTween.linearMotion(player, player.x, player.y, 4*16, 5*16,3.0, {onComplete: (_)->{player.animation.play("idle");}});
             }})).then(FlxTween.num(0.0,1.0, 1.5,{onComplete: (_)->{
@@ -90,7 +91,7 @@ class EndState extends FlxState
                 duckl3.y -= 15;
                 flowSplash.y -= 16;
                 flow2.visible = false;
-                
+                FlxG.sound.play("assets/sounds/whoosh2.wav", 1, false);
                 
             }})).then(FlxTween.num(0.0,1.0, 1.5,{onComplete: (_)->{
                 add(new FlxSprite(motherDuck.x, motherDuck.y).loadGraphicFromSprite(water));
@@ -102,6 +103,7 @@ class EndState extends FlxState
                 duckl2.y -= 14;
                 duckl3.y -= 14;
                 flowSplash.y -= 16;
+                FlxG.sound.play("assets/sounds/whoosh2.wav", 1, false);
                 flow1.visible = false;
             }})).then(FlxTween.num(0.0,1.0, 1.5,{onComplete: (_)->{
                 add(new FlxSprite(motherDuck.x, motherDuck.y).loadGraphicFromSprite(water));
@@ -117,6 +119,7 @@ class EndState extends FlxState
                 motherDuck.flipX = true;
             }})).then(FlxTween.num(0.0,1.0, 1.5,{onComplete: (_)->{
                 heart.visible = true;
+                FlxG.sound.play("assets/sounds/love.wav", 1, false);
             }})).then(FlxTween.num(0.0,1.0, 3.0,{onComplete: (_)->{
                 var text1 = new FlxText(20, 50);
                 text1.text ="Thank you for playing!";
@@ -124,9 +127,9 @@ class EndState extends FlxState
                 text2.text ="Made by kumber for the";
                 var text3 = new FlxText(20, 35);
                 text3.text ="Ludum Dare 60 Jam";
-                text1.setFormat(8,FlxColor.fromString("#51375c"));
-                text2.setFormat(8,FlxColor.fromString("#51375c"));
-                text3.setFormat(8,FlxColor.fromString("#51375c"));
+                text1.setFormat(8,FlxColor.fromString("#51375c"),FlxTextBorderStyle.OUTLINE, FlxColor.WHITE);
+                text2.setFormat(8,FlxColor.fromString("#51375c"),FlxTextBorderStyle.OUTLINE, FlxColor.WHITE);
+                text3.setFormat(8,FlxColor.fromString("#51375c"),FlxTextBorderStyle.OUTLINE, FlxColor.WHITE);
                 add(text1);
                 add(text2);
                 add(text3);

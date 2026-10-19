@@ -1,5 +1,6 @@
 package kumber.oldtech;
 
+import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 
@@ -46,6 +47,7 @@ class Socket extends IlluminableSprite
         if(this.angularVelocity ==0 && R.completedSockets.length >= R.socketsToFill)
         {
             this.angularVelocity = rotated?-10:10;
+            FlxG.sound.play("assets/sounds/gears.wav", 1, true);
         }
 
         super.update(elapsed);

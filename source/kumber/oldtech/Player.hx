@@ -83,6 +83,7 @@ class Player extends IlluminableSprite implements ITorch
         {
             if(isTouching(FLOOR))
             {
+                FlxG.sound.play("assets/sounds/jump.wav", 1, false);
                 acceleration.y = -2000;
                 isJumping = true;
                 timeJumping = 0;
