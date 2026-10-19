@@ -7,6 +7,7 @@ class Socket extends IlluminableSprite
 {
     public var filled(default,null) = false;
     public var iid:String = "";
+    public var rotated:Bool;
 
     public function new(x:Float, y:Float, filled:Bool, rotated:Bool)
     {
@@ -22,7 +23,7 @@ class Socket extends IlluminableSprite
             setPosition(x+7,y+7);
         }
 
-        
+        this.rotated = rotated;
         this.filled = filled;
         if(rotated)
         {
@@ -40,5 +41,14 @@ class Socket extends IlluminableSprite
         R.completedSockets.push(iid);
     }
 
+    override public function update(elapsed:Float)
+    {
+        if(this.angularVelocity ==0 && R.completedSockets.length >= R.socketsToFill)
+        {
+            this.angularVelocity = rotated?-10:10;
+        }
+
+        super.update(elapsed);
+    }
 
 }

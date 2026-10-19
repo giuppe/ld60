@@ -20,7 +20,7 @@ class Rock extends IlluminableSprite
     public function breakRock()
     {
         makeGraphic(16,1,FlxColor.fromString("#51375c"));
-        y=y+15;
+        //y=y+15;
         isBroken = true;
         R.brokenRocks.push(iid);
     }

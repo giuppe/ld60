@@ -58,7 +58,7 @@ class EndState extends FlxState
         water = new FlxSprite();
         water.makeGraphic(16,16, FlxColor.fromString("#4252ff"));
         
-        player.setPosition(-1,5*16);
+        player.setPosition(-1*16,5*16);
         motherDuck.setPosition(5*16, 8*16);
         duckl1.setPosition(6*16, 8*16);
         duckl2.setPosition(6*16+8, 8*16);

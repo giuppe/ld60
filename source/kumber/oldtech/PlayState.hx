@@ -1,5 +1,6 @@
 package kumber.oldtech;
 
+import flixel.util.FlxDirection;
 import flixel.FlxObject;
 import haxe.Exception;
 import flixel.math.FlxPoint;
@@ -22,10 +23,11 @@ class PlayState extends FlxState
 	var sockets:FlxSpriteGroup;
 	var rocks:FlxSpriteGroup;
 	var torches:FlxSpriteGroup;
+	var oneways:FlxSpriteGroup;
 	var pickaxe:Null<Pickaxe> = null;
 	var minitorch:Null<Minitorch> = null;
 	var exit:Null<Exit> = null;
-	//var exitGate:Null<ExitGate> = null;
+	var exitGate:Null<ExitGate> = null;
 	var levelTransition:Bool = false;
 
 	override public function create():Void
@@ -180,10 +182,35 @@ class PlayState extends FlxState
 			add(exit = new Exit(level.l_Entities.all_Exit[i].pixelX, level.l_Entities.all_Exit[i].pixelY));
 		}
 
+		for(i in 0...level.l_Entities.all_ExitGate.length)
+		{
+			var open = false;
+			if(R.completedSockets.length>=R.socketsToFill)
+				open= true;
+			add(exitGate = new ExitGate(level.l_Entities.all_ExitGate[i].pixelX, level.l_Entities.all_ExitGate[i].pixelY, open));
+			exitGate.immovable = true;
+			exitGate.moves =false;
+		}
+
+		oneways = new FlxSpriteGroup();
+		for(i in 0...level.l_Entities.all_OnewayPlatform.length)
+		{
+			var oneway = new IlluminableSprite(level.l_Entities.all_OnewayPlatform[i].pixelX, level.l_Entities.all_OnewayPlatform[i].pixelY);
+			oneway.loadGraphic("assets/platform.png");
+			oneways.add(oneway);
+			oneway.immovable = true;
+			oneway.moves =false;
+			oneway.allowCollisions = FlxDirection.UP;
+		}
+		add(oneways);
+
 		add(player);
 		if(player.appendedGear != null)
 			add(player.appendedGear);
 		R.currentLights.push(player);
+		#if debug
+		R.socketsToFill = 1;
+		#end
 	}
 
 	public function updateLevelLed()
@@ -227,7 +254,21 @@ class PlayState extends FlxState
 	{
 		levelTransition = false;
 		//trace(player.x, player.y);
+		FlxG.collide(player, exitGate);
 		FlxG.collide(player, platforms, (p:FlxSprite, platform:FlxSprite)->
+		{
+			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
+			if(player != null && player.isTouching(FLOOR) && player.timeJumping>0)
+			{
+				player.timeJumping = 0;
+				player.velocity.y = 0;
+				FlxTween.tween(player, {"scale.x":1.1, "scale.y":0.9}, 0.05, {type:ONESHOT }).then(
+                FlxTween.tween(player, {"scale.x":1.0, "scale.y":1.0}, 0.05, {type:ONESHOT })
+            );
+			}
+		});
+
+		FlxG.collide(player, oneways, (p:FlxSprite, platform:FlxSprite)->
 		{
 			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
 			if(player != null && player.isTouching(FLOOR) && player.timeJumping>0)
@@ -280,6 +321,10 @@ class PlayState extends FlxState
 				torches.clear();
 				gears.clear();
 				sockets.clear();
+				oneways.clear();
+				exitGate = null;
+				exit = null;
+				minitorch = null;
 				pickaxe = null;
 				var level = null;
 				for(l in world.levels)
