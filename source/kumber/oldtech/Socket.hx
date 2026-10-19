@@ -8,7 +8,7 @@ class Socket extends IlluminableSprite
     public var filled(default,null) = false;
     public var iid:String = "";
 
-    public function new(x:Float, y:Float, filled:Bool)
+    public function new(x:Float, y:Float, filled:Bool, rotated:Bool)
     {
         super(x,y);
         var debugColor= #if debug FlxColor.CYAN #else FlxColor.TRANSPARENT #end;
@@ -24,6 +24,10 @@ class Socket extends IlluminableSprite
 
         
         this.filled = filled;
+        if(rotated)
+        {
+            this.angle = 45;
+        }
     }
 
     public function setFilled()

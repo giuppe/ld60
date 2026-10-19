@@ -11,7 +11,7 @@ class R
 
     public static var completedSockets:Array<String> = [];
 
-    public static final socketsToFill:Int = 1;
+    public static var socketsToFill:Int = 0;
 
     public static var brokenRocks:Array<String> = [];
 }

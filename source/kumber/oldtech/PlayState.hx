@@ -37,10 +37,21 @@ class PlayState extends FlxState
 		text.setFormat(R.FONT_NAME, 30);
 		world = new World();
 		player = new Player(0,0);
+
+		// calculate gears needed
+		var total_gears = 0;
+		for(level in world.levels)
+		{
+			total_gears += level.l_Entities.all_Gear.length;
+		}
+		R.socketsToFill = total_gears;
+		trace("Total gears: ", total_gears);
+
 		loadLevel(world.all_levels.Level_0, FlxPoint.get(
 			world.all_levels.Level_0.l_Entities.all_Player[0].pixelX,
 			world.all_levels.Level_0.l_Entities.all_Player[0].pixelY
 			));
+		
 	}
 
 	public function loadLevel(level:World_Level, playerPos:FlxPoint)
@@ -112,9 +123,13 @@ class PlayState extends FlxState
 		
 		for(i in 0...level.l_Entities.all_Socket.length)
 		{
-			var filled = R.completedSockets.contains(level.l_Entities.all_Socket[i].iid);
-			var socket = new Socket(level.l_Entities.all_Socket[i].pixelX,
-				level.l_Entities.all_Socket[i].pixelY, filled);
+			var filled = R.completedSockets.contains(level.l_Entities.all_Socket[i].iid) || level.l_Entities.all_Socket[i].f_filled;
+			var rotated = level.l_Entities.all_Socket[i].f_rotated;
+			var pos = FlxPoint.get(level.l_Entities.all_Socket[i].pixelX,
+				level.l_Entities.all_Socket[i].pixelY);
+			if(level.l_Entities.all_Socket[i].f_bottomLeft)
+				pos.add(-8, 8);
+			var socket = new Socket(pos.x, pos.y, filled, rotated);
 			socket.iid = level.l_Entities.all_Socket[i].iid;
 			sockets.add(socket);
 			
