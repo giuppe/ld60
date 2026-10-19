@@ -1,5 +1,7 @@
 package kumber.oldtech;
 
+import flixel.text.FlxText;
+import flixel.graphics.atlas.FlxAtlas;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import flixel.group.FlxSpriteGroup;
@@ -115,6 +117,20 @@ class EndState extends FlxState
                 motherDuck.flipX = true;
             }})).then(FlxTween.num(0.0,1.0, 1.5,{onComplete: (_)->{
                 heart.visible = true;
+            }})).then(FlxTween.num(0.0,1.0, 3.0,{onComplete: (_)->{
+                var text1 = new FlxText(20, 50);
+                text1.text ="Thank you for playing!";
+                var text2 = new FlxText(20, 20);
+                text2.text ="Made by kumber for the";
+                var text3 = new FlxText(20, 35);
+                text3.text ="Ludum Dare 60 Jam";
+                text1.setFormat(8,FlxColor.fromString("#51375c"));
+                text2.setFormat(8,FlxColor.fromString("#51375c"));
+                text3.setFormat(8,FlxColor.fromString("#51375c"));
+                add(text1);
+                add(text2);
+                add(text3);
+
             }}));
         
     }
