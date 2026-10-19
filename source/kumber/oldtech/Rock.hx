@@ -10,7 +10,7 @@ class Rock extends IlluminableSprite
     {
         super(x,y);
         this.iid = iid;
-        makeGraphic(16,16,FlxColor.ORANGE);
+        loadGraphic("assets/rock.png");
         if(broken)
             breakRock();
         
@@ -19,7 +19,8 @@ class Rock extends IlluminableSprite
 
     public function breakRock()
     {
-        makeGraphic(16,16,FlxColor.GRAY);
+        makeGraphic(16,1,FlxColor.fromString("#51375c"));
+        y=y+15;
         isBroken = true;
         R.brokenRocks.push(iid);
     }
