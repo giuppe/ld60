@@ -367,7 +367,7 @@ class PlayState extends FlxState
 			
 			minitorch.kill();
 			minitorch = null;
-			player.intensity +=0.5;
+			player.intensity +=0.1;
 			
 		});
 		

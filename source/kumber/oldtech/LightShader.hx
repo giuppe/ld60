@@ -96,7 +96,7 @@ class LightShader extends FlxGraphicsShader
 		float total_rim = 0.0;
 		float total_rim_int = 0.0;
 
-		float ambient_per_light = 0.03;
+		float ambient_per_light = 0.3;
 
 		float ambient = 0.0;
 
@@ -134,7 +134,7 @@ class LightShader extends FlxGraphicsShader
 		for (int i = 0; i < 4; i++) {
 			float dist = distance(pixpos, uLightsPos[i]);
 			float light_intensity = 1.0 - smoothstep(0.0, 60.0, dist);
-			light_intensity = clamp(light_intensity*uLightsIntensity[i],0.0,1.0);
+			light_intensity = clamp(light_intensity*(uLightsIntensity[i]*0.3),0.0,1.0);
 			
 			float flicker = 0.85 + 0.10 * sin(uTime * 12.0) + 0.05 * sin(uTime *  19.0);
 			if(uLightsFlicker[i] < 0.5)
@@ -156,15 +156,15 @@ class LightShader extends FlxGraphicsShader
 			color_sum += uLightsColor[i] * light_intensity;
 			weight_sum += light_intensity;
 		}
-		total_light = clamp(total_light, 0.0, 1.0);
+		total_light = clamp(total_light, 0.0, 0.9);
 		total_rim = clamp(total_rim, 0.0,1.0);
-		total_rim_int = clamp(total_rim_int, 0.0,1.0);
+		total_rim_int = clamp(total_rim_int, 0.0,0.9);
 		
 		vec3 mixed_light_color = weight_sum > 0.001 ? color_sum/weight_sum : vec3(1.0);
 
 		vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
 		color *= vec4(total_light*mixed_light_color, 1.0);
-		vec4 final_light=vec4(total_rim_int*mixed_light_color+1.0, 1.0);
+		vec4 final_light=vec4(total_rim_int*mixed_light_color+0.8, 1.0);
 		color *= mix(final_light, final_light*2.5, total_rim);
 		//color = vec4(total_rim_int, 0.0, 0.0,1.0);
 		gl_FragColor = color;
