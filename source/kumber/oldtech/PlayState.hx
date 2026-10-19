@@ -24,6 +24,8 @@ class PlayState extends FlxState
 	var torches:FlxSpriteGroup;
 	var pickaxe:Null<Pickaxe> = null;
 	var minitorch:Null<Minitorch> = null;
+	var exit:Null<Exit> = null;
+	//var exitGate:Null<ExitGate> = null;
 	var levelTransition:Bool = false;
 
 	override public function create():Void
@@ -31,7 +33,7 @@ class PlayState extends FlxState
 		super.create();
 		//trace("hello");
 		var text = new FlxText("Hello");
-		add(text);
+		//add(text);
 		text.setFormat(R.FONT_NAME, 30);
 		world = new World();
 		player = new Player(0,0);
@@ -120,6 +122,8 @@ class PlayState extends FlxState
 		
 		add(sockets);
 
+
+
 		rocks = new FlxSpriteGroup();
 		
 		for(i in 0...level.l_Entities.all_Rock.length)
@@ -138,6 +142,8 @@ class PlayState extends FlxState
 		
 		add(rocks);
 
+		
+
 		if(!player.hasPickaxe)
 		{
 			for(i in 0...level.l_Entities.all_Pickaxe.length)
@@ -152,6 +158,11 @@ class PlayState extends FlxState
 			{
 				add(minitorch = new Minitorch(level.l_Entities.all_Minitorch[i].pixelX, level.l_Entities.all_Minitorch[i].pixelY));
 			}
+		}
+
+		for(i in 0...level.l_Entities.all_Exit.length)
+		{
+			add(exit = new Exit(level.l_Entities.all_Exit[i].pixelX, level.l_Entities.all_Exit[i].pixelY));
 		}
 
 		add(player);
@@ -283,6 +294,24 @@ class PlayState extends FlxState
 				
 				loadLevel(level, targetPos);
 
+			}
+		} );
+
+		FlxG.overlap(player, exit, (p:FlxSprite, d:FlxSprite)->
+		{
+
+			var player:Null<Player> = Std.downcast(p, kumber.oldtech.Player);
+			var exit:Null<Exit> = Std.downcast(d, kumber.oldtech.Exit);
+			if(player == null || exit == null)
+				return;
+			if(!player.pixelsOverlapPoint(FlxPoint.get(exit.x+exit.width, exit.y+exit.height/2)))
+				return;
+
+
+
+			if(player.velocity.x > 0)
+			{
+				FlxG.switchState(EndState.new);
 			}
 		} );
 
