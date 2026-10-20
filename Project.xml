@@ -4,7 +4,7 @@
 
 	<!-- _________________________ Application Settings _________________________ -->
 	
-	<app title="OldTech-LD60" file="OldTech" main="kumber.oldtech.Main" version="0.0.1" company="kumber" />
+	<app title="Ancient Technology-LD60" file="OldTech" main="kumber.oldtech.Main" version="0.0.1" company="kumber" />
 	
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"!-->
